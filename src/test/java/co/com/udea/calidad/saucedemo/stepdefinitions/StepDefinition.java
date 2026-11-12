@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 
 /**
- * Actor principal: Karen (cliente de la tienda). Cada paso de Gherkin delega
+ * Actor principal: Juan (cliente de la tienda). Cada paso de Gherkin delega
  * en una Task (acción de negocio) o en una Question (verificación).
  */
 public class StepDefinition {
@@ -52,7 +52,7 @@ public class StepDefinition {
     @Before
     public void config() {
         OnStage.setTheStage(new OnlineCast());
-        OnStage.theActorCalled("Karen");
+        OnStage.theActorCalled("Juan");
     }
 
     /** Pausa entre paso y paso para poder observar la prueba (se cambia con -Ppausa.ms=3000). */
