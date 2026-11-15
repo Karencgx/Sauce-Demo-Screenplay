@@ -1,6 +1,6 @@
 # SauceDemo Screenplay
 
-Automatización de pruebas E2E sobre la tienda de práctica [SauceDemo](https://www.saucedemo.com/) con el patrón **Screenplay**, **SerenityBDD**, **Cucumber** (escenarios en español) y **Gradle**.
+Automatización de pruebas E2E sobre la tienda de práctica [SauceDemo](https://www.saucedemo.com/) con el patrón **Screenplay**, **SerenityBDD**, **Cucumber** (escenarios en inglés) y **Gradle**.
 
 Proyecto del taller *Automatización de pruebas con scaffolding of ScreenPlay Architecture* — Calidad de Software 2026-2, Universidad de Antioquia.
 
@@ -11,20 +11,27 @@ Proyecto del taller *Automatización de pruebas con scaffolding of ScreenPlay Ar
 
 ## Qué se prueba
 
-| Feature | Qué cubre |
-|---|---|
-| `autenticacion.feature` | Login exitoso, login rechazado (usuario bloqueado, clave incorrecta, usuario o clave vacíos), cierre de sesión, acceso directo al catálogo sin sesión |
-| `carrito_de_compras.feature` | Agregar y eliminar productos, carrito nuevo vacío, contador del ícono, vaciar el carrito, conservar productos al seguir comprando |
-| `catalogo_de_productos.feature` | Listado de 6 productos, 4 criterios de ordenamiento, detalle de un producto, agregar desde el detalle |
-| `checkout.feature` | Compra completa, generación del PDF de la orden, totales (subtotal, impuesto, total), datos de envío incompletos, cancelar, carrito vacío tras comprar, compra y cierre de sesión |
-| `usuarios.feature` | Los 6 usuarios de SauceDemo: login, compra completa, precios del catálogo y productos que fallan con perfiles defectuosos |
+Cada historia de usuario (HU) es un feature en inglés dentro de `src/test/resources/features/saucedemo/` y sus escenarios son los criterios de aceptación. Cada escenario lleva la etiqueta de su HU (`@HU-01` ... `@HU-10`).
+
+| HU | Historia | Casos |
+|---|---|---|
+| HU-01 | Iniciar sesión (usuario válido, bloqueado y 4 rechazos) | 6 |
+| HU-02 | Cerrar sesión y acceso sin sesión | 2 |
+| HU-03 | Ordenar el catálogo (6 productos y 4 criterios) | 5 |
+| HU-04 | Ver el detalle de un producto (6 productos) y agregarlo desde el detalle | 8 |
+| HU-05 | Gestionar el carrito | 8 |
+| HU-06 | Ingresar los datos de envío, totales de la orden y cancelar | 8 |
+| HU-07 | Finalizar la compra | 6 |
+| HU-08 | Descargar el PDF de la orden | 1 |
+| HU-09 | Usar la tienda con cada perfil de usuario | 13 |
+| HU-10 | Documentar los defectos de los usuarios de prueba | 7 |
 
 ### Resultado esperado
 
-El proyecto tiene **47 casos de prueba**:
+El proyecto tiene **64 casos de prueba**:
 
-- **40 deben pasar.**
-- **7 deben fallar a propósito.** Están etiquetados como `@defectos-conocidos` y documentan defectos que SauceDemo trae en sus usuarios de práctica:
+- **57 deben pasar.**
+- **7 deben fallar a propósito** (HU-10, etiqueta `@known-defects`). Describen el comportamiento correcto, así que cada fallo es un defecto real que SauceDemo trae en sus usuarios de práctica:
 
 | Usuario | Defecto que detecta la prueba |
 |---|---|
@@ -32,7 +39,9 @@ El proyecto tiene **47 casos de prueba**:
 | `problem_user` | No puede agregar al carrito la camiseta Bolt, la chaqueta Fleece ni la camiseta roja; el formulario de checkout cambia las letras escritas |
 | `error_user` | Permite continuar el checkout sin apellido y el botón Finish no completa la orden |
 
-`locked_out_user` se prueba como camino de excepción (login rechazado).
+### Credenciales
+
+La contraseña no está escrita en los features. Se lee de la variable de entorno `SAUCEDEMO_PASSWORD` o de la opción `-Psaucedemo.password`; si no se define, se usa la contraseña pública de demostración que SauceDemo publica en su propia página de inicio de sesión.
 
 ---
 
@@ -47,7 +56,7 @@ src/main/java/co/com/udea/calidad/saucedemo
 └── utils/            Utilidades (URL base, pausas, carpeta de descargas)
 
 src/test
-├── java/.../stepdefinitions/   StepDefinition: une cada frase Gherkin con tasks y questions
+├── java/.../stepdefinitions/   Hooks y StepDefinitions por dominio (autenticación, catálogo, carrito, checkout)
 ├── java/.../runners/           Runner (CucumberWithSerenity)
 └── resources/
     ├── features/saucedemo/     Escenarios en español (Gherkin)
@@ -78,14 +87,14 @@ gradle clean test aggregate
 Solo las pruebas que deben pasar / solo los defectos conocidos:
 
 ```bash
-gradle clean test aggregate -PsinDefectos
-gradle clean test aggregate -PsoloDefectos
+gradle clean test aggregate -PwithoutDefects
+gradle clean test aggregate -PonlyDefects
 ```
 
-Un escenario puntual por nombre:
+Una sola historia de usuario (por ejemplo, la HU-04):
 
 ```bash
-gradle clean test aggregate "-Dcucumber.filter.name=Generar el PDF"
+gradle clean test aggregate -Phu=HU-04
 ```
 
 ### Opciones
@@ -93,6 +102,7 @@ gradle clean test aggregate "-Dcucumber.filter.name=Generar el PDF"
 | Opción | Para qué sirve | Valor por defecto |
 |---|---|---|
 | `-Ppausa.ms=3000` | Pausa visible entre pasos, en milisegundos (útil para demostrar) | `1500` |
+| `-Psaucedemo.password=<clave>` | Contraseña de los usuarios (o variable de entorno `SAUCEDEMO_PASSWORD`) | contraseña pública de la demo |
 | `-Pdescargas.dir=<ruta>` | Carpeta donde Chrome guarda las descargas (la prueba del PDF la revisa) | `~/Downloads` |
 
 > **Nota:** `clean` borra el reporte anterior. Si quieres conservar el de una corrida, copia `target/site/serenity` a otra carpeta antes de volver a ejecutar.
@@ -123,5 +133,5 @@ gradle screenPlayArchitecture --projectName=SauceDemoScreenplay --groupId=co.com
 
 ## Notas
 
-- SauceDemo es un sitio público de práctica; las credenciales son las publicadas por el propio sitio (`secret_sauce`).
+- SauceDemo es un sitio público de práctica; las credenciales son las que publica el propio sitio.
 - Ocasionalmente Chrome se cierra a mitad de una corrida (`invalid session id`). No es un fallo de la prueba: se repite el escenario afectado.

@@ -14,6 +14,19 @@ public class Util {
 
     private Util() {}
 
+    /**
+     * Password of the SauceDemo users. It is NOT written in the features.
+     * Order: environment variable SAUCEDEMO_PASSWORD, then -Psaucedemo.password, then the demo
+     * password that saucedemo.com itself publishes on its login page (public, not a real secret).
+     */
+    public static String password() {
+        String fromEnvironment = System.getenv("SAUCEDEMO_PASSWORD");
+        if (fromEnvironment != null && !fromEnvironment.isEmpty()) {
+            return fromEnvironment;
+        }
+        return System.getProperty("saucedemo.password", "secret_sauce");
+    }
+
     /** Convierte "Sauce Labs Backpack" en "sauce-labs-backpack" (formato del atributo data-test: solo minúsculas y guiones por espacios). */
     public static String slug(String nombre) {
         return nombre.trim().toLowerCase().replaceAll("\\s+", "-");

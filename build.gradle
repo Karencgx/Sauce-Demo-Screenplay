@@ -55,22 +55,20 @@ dependencies {
 }
 
 tasks.named('test') {
-    // Pausa entre pasos (ms): gradle clean test -Ppausa.ms=3000
     systemProperty 'pausa.ms', project.findProperty('pausa.ms') ?: '1500'
-    // Carpeta de descargas si no es la de por defecto: -Pdescargas.dir=D:\Descargas
     if (project.hasProperty('descargas.dir')) {
         systemProperty 'descargas.dir', project.property('descargas.dir')
     }
-    testLogging.showStandardStreams = true
-
-    // Filtro por etiquetas: -PsinDefectos  o  -PsoloDefectos
-    if (project.hasProperty('sinDefectos')) {
-        systemProperty 'cucumber.filter.tags', 'not @defectos-conocidos'
-    } else if (project.hasProperty('soloDefectos')) {
-        systemProperty 'cucumber.filter.tags', '@defectos-conocidos'
+    if (project.hasProperty('saucedemo.password')) {
+        systemProperty 'saucedemo.password', project.property('saucedemo.password')
+    }
+    def tags = []
+    if (project.hasProperty('hu')) { tags << "@${project.property('hu')}" }
+    if (project.hasProperty('withoutDefects')) { tags << 'not @known-defects' }
+    else if (project.hasProperty('onlyDefects')) { tags << '@known-defects' }
+    if (!tags.isEmpty()) {
+        systemProperty 'cucumber.filter.tags', tags.collect { "(${it})" }.join(' and ')
     }
     testLogging.showStandardStreams = true
-
-    // Genera el reporte de Serenity aunque alguna prueba falle
     finalizedBy 'aggregate'
 }
