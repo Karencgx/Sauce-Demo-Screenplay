@@ -4,7 +4,7 @@ Automatización de pruebas E2E sobre la tienda de práctica [SauceDemo](https://
 
 Proyecto del taller *Automatización de pruebas con scaffolding of ScreenPlay Architecture* — Calidad de Software 2026-2, Universidad de Antioquia.
 
-**Integrantes:** _(nombres del equipo)_
+**Integrantes:** Alejandro López Ospina - Karen Cardona Gutiérrez
 **Docente:** Robinson Coronado G.
 
 ---
